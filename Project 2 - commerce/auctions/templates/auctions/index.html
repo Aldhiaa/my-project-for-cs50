@@ -1,0 +1,52 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div style="margin-left:20px;">
+
+        <h2>Active Listings</h2>
+
+    <form action="{% url 'show_listing_by_category' %}" method="POST">
+        {% csrf_token %}
+
+        <label for="category">Filter By:</label>
+        <select name="category_selected" id="category_selected">
+            <option disabled selected value> -- select a category -- </option>
+            <option value="All_Categories">All Categories</option>
+            {% for category in everyCategories %}
+            <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+            </select>  
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>   
+    </form>
+
+    </div>
+
+    {% if active_listings %}
+      <div class="container-fluid content-row">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5">
+            {% for listing in active_listings %}
+            <div class="col" id="eachcard">
+                <div class="card h-100">
+                    <img src="{{ listing.imageURL }}" class="card-img-top" alt="{{ listing.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ listing.title }}</h5>
+                            <p class="card-text">{{ listing.description }}</p>
+                            <p class="card-text">Price: ${{ listing.starting_price }}</p>
+                            <a href="{% url 'listing_page_info' id=listing.id %}" class="btn btn-primary">See Listing</a>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">Created on: {{ listing.creation_date }}</small>
+                        </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <h4>No Listings Found in that category (yet!)</h4>
+        <form action="{% url 'index' %}" method="POST">
+            {% csrf_token %} 
+                <button type="submit" class="btn btn-danger btn-sm">Back To Listings</button>   
+        </form>
+    {% endif %}
+{% endblock %}

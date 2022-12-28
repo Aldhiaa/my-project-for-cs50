@@ -1,0 +1,104 @@
+{% extends "myplaces/layout.html" %} {% load static %}
+
+{% block body %}
+
+<!-- Map -->
+<div class="map" id="map"></div>
+<!-- Map -->
+
+
+<!-- Form to create a new place -->
+<div class="newPlace">
+    <div class="button" id="button-5" data-toggle="modal" data-target="#exampleModal" data-whatever="NewPlace">
+        <div id="translate"></div>
+        <a href="#">New Place</a>
+    </div>
+
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Place</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span id="close-form" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                    <div class="modal-body">
+
+                        <form>
+
+                            <div id="alert-form" class="alert alert-danger d-none" role="alert">
+                                <strong><span id="alert-message"></span></strong>
+                                <button type="button" class="close">
+                                    <span class="close-alert" aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Title-name" class="col-form-label">Title:</label>
+                                <input type="text" class="form-control" id="Title-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="Description-text" class="col-form-label">Description:</label>
+                                <textarea class="form-control" id="Description-text"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Address-name" class="col-form-label">Address: (Auto-filled - if found) <img data-toggle="tooltip" data-placement="top" class="question-mark-logo" title="If you click on the location button at the bottom right, this field should auto-fill. However, we might not be able to find an address even if we have the coordinates." src="{% static 'myplaces/logos/question.png'%}" alt=""></label>
+                                <input placeholder="Optional" type="text" class="form-control" id="Address-name">
+                            </div>
+
+                            <label for="lat" class="col-form-label">Longitude & Latitude: (Auto-filled) <img data-toggle="tooltip" data-placement="top" class="question-mark-logo" title="If you click on the location button at the bottom right, these fields should auto-fill." src="{% static 'myplaces/logos/question.png'%}" alt=""></label>
+                            <div class="input-group" id="lat">
+                                <span class="input-group-text">Lgn</span>
+                                <input type="text" class="form-control" placeholder="Longitude" id="Longitude-name">
+                                <span class="input-group-text">Lat</span>
+                                <input type="text" class="form-control" placeholder="Latitude" id="Latitude-name">
+                            </div>
+
+
+                            <div class="form-group">
+                                <br>
+                                <label for="category-name" class="col-form-label">Category:  <img data-toggle="tooltip" data-placement="top" class="question-mark-logo" title="Please, select at least one category." src="{% static 'myplaces/logos/question.png'%}" alt=""></label>
+                                <br>
+                                {% for category in categories %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="{{ category.name }}" value="{{ category.name }}">
+                                        <label class="form-check-label" for="inlineCheckbox1">{{ category.name }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="image-name" class="col-form-label">Upload an image of this place! (Optional):</label>
+                                <br>
+                                <input type="file" id="newfile" class="imageFile" accept="image/*" (change)="getFile($event)" />
+                                <button class="btn btn-danger btn-sm" onclick="resetFile()">Reset file</button>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" onclick="submitNewPlace(event)">Save this location</button>
+                            </div>
+                            
+                        </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Form to create a new place -->
+
+
+<!-- Div in which we will insert our delete Modals for each locations -->
+<div class="delete-modals">
+</div>
+
+<script  src="{% static 'myplaces/map.js' %}" defer></script>
+<script  src="{% static 'myplaces/index.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+
+        <!--Place to make a new post-->
+        <div class="container">
+        <h1>All Posts</i></h1>
+
+        {% if user.is_authenticated %}
+        
+        <form onsubmit="createPost(event)">
+            {% csrf_token %}
+        <div id="first_card" class="card">
+            <div class="card-body">
+                <h4><label for="textarea-post">New Post</label></h4>
+                <textarea name="textarea-post" class ="textarea" id="textarea-post" rows="5" required="True"></textarea>
+                <button type="submit" class="btn btn-primary my-2">Post</button>
+            </div>
+        </div>
+        </form>
+
+        {% else %}
+        <p>If you want to Post, you need to be <a href="{% url 'login' %}">Logged In</a></p>
+        {% endif %}
+
+        
+         <!--Display of every post-->
+        <div id="post-list">
+                
+        {% for post in page_obj %}
+
+            <div class="card" id="post_div_{{post.id}}">
+                <div class="card-body">
+                    <div>
+                        <img src="{{post.author.profile_image.url}}" alt="" class="profileImagePost item" >
+                        <a class="item" href="{% url 'profile' id=post.author.id %}"><h3>@{{post.author}}</h3></a>
+                    </div>
+                    
+                    <!-- Div to make disappear when we edit a post -->
+                    <div id="disappear_{{post.id}}">
+                        <p id="text_{{post.id}}" style="margin-top:20px;">{{post.content}}</p>
+                        <div id="date_post"><i>Posted on <span>{{post.date}}</span> </i></div>
+                    </div>
+
+
+                    <!-- Hidden Block with a text area that appear when we edit a post -->
+                    <div style="display:none;" id="new_text_{{post.id}}">
+                        <textarea id="textarea_{{post.id}}"  name="textarea-post" class ="textarea" id="textarea" rows="3" required="True"></textarea>
+                        <button onclick="hideEditField(event)" post_id="{{post.id}}" type="submit" class="btn btn-danger my-2 item">Cancel</button>
+                        <button  onclick="saveEdit(event)" post_id="{{post.id}}" type="submit" class="btn btn-success my-2 item">Save</button>
+
+                    </div>
+
+                        {% if user.is_authenticated and user.id == post.author.id %}
+                        <span onclick="editPost(event)" button_action="edit_post" id="edit_{{post.id}}" post_id="{{post.id}}" class="edit_button">Edit</span> 
+                        <span onclick="deletePost(event)" button_action="delete_post" post_id="{{post.id}}" class="edit_button">Delete</span> 
+                        {% endif %}
+
+                        
+                    {% if user.is_authenticated %}
+
+                        <div>
+                            <span onclick="like(event)"  post_id="{{post.id}}"  id="heart_full_{{post.id}}" class="item heart {% if not post.liked %} d-none {% endif %}" style="color:red;" >&#9829;</span>
+                            <span onclick="like(event)" post_id="{{post.id}}" id="heart_empty_{{post.id}}" class="item heart {% if post.liked %} d-none {% endif %}" style="color:red;">&#9825;</span>
+                            <p id="count_likes_{{post.id}}" class="item like_count" >{{ post.likes.count }}</p>
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+
+
+       
+
+
+        <!-- Pagination Navbar -->
+        <nav class="pagination" aria-label="Page navigation example">
+            <span class="step-links"></span>
+                <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% endif %}
+
+                <li class="page-item"><a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+                
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+                {% endif %}
+                </ul>
+            </span>
+        </nav>
+
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="profile">
+            <img id="profile_img_{{user_profile.id}}" class="profileImage" src="{{img}}"  alt="{{img}}" max-height="10px">
+            <h2>{{user_profile.username}}</h2>
+
+            {% if user_profile.id == user.id %}
+
+                <!-- Hidden Block with a text area that appear when we edit a post -->
+                <div style="display:none;" id="new_text_{{user_profile.id}}">
+                    <div class="upload-btn-wrapper uploadbutton">
+                        <span>Upload a new image here: </span>
+                        <button class="btn btn-primary ">Select Image</button>
+                        <input id="newfile_{{user_profile.id}}" type="file" name="myfile" />
+                    </div> 
+                    <br>
+                    <textarea id="textarea_{{user_profile.id}}"  class="form-control form-control-sm mb-3 textareaprofile" rows="3"></textarea>
+                    <button onclick="hideEditProfileField(event)" profile_id="{{user_profile.id}}" type="submit" class="btn btn-danger my-2 item">Cancel</button>
+                    <button  onclick="saveEditProfile(event)" profile_id="{{user_profile.id}}" type="submit" class="btn btn-success my-2 item">Save</button>
+                </div>
+
+                {% if user_profile.bio is None %}
+                <div class="empty_bio_{{user_profile.id}}">No bio</div>
+                {% else %}
+                <div class="empty_bio_{{user_profile.id}}">{{user_profile.bio}}</div>
+                {% endif %}
+                <span onclick="profile(event)" profile_id="{{user.id}}" class="edit_button" id="edit_profile_{{user_profile.id}}">Edit profile</span> 
+
+                
+            {% else %}
+                {% if user_profile.bio is None %}
+                <div>No bio</div>
+                {% else %}
+                <div>{{user_profile.bio}}</div>
+                {% endif %}
+            {% endif %}
+
+
+            <!-- <div>
+                {% if user_profile.bio == None and user.id == user_profile.id %}
+                    <a href="#" >Create Bio</a>
+                {% else %}
+
+                        {% if user_profile.bio == None %}
+                            <p>No Bio for this user..</p>
+                        {% else %}
+                            {{user_profile.bio}}
+                        {% endif %}
+
+                        {% if user.id == user_profile.id %}
+                            <button class="btn btn-primary">Edit Bio</button>
+                        {% endif %}
+
+                {% endif %}
+            </div> -->
+            <p>{{user_profile.followers.all.count}} Followers - {{user_profile.followings.all.count}} Followings</p>
+            
+            {% if user_profile.id != user.id %}
+                {% if isFollowed %}
+                <form style="margin-bottom: 50px;" action="{% url 'unfollow' id=user_profile.id %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <button class="btn btn-danger">Unfollow</button>
+                    </div>
+                </form>
+                {% else %}
+                <form style="margin-bottom: 50px;" action="{% url 'follow' id=user_profile.id %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <button class="btn btn-primary">Follow</button>
+                    </div>
+                </form>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% for post in page_obj %}
+
+            <div class="card" id="post_div_{{post.id}}">
+                <div class="card-body">
+                    <div>
+                        <img src="{{post.author.profile_image.url}}" alt="" class="profileImagePost item" >
+                        <a class="item" href="{% url 'profile' id=post.author.id %}"><h3>@{{post.author}}</h3></a>
+                    </div>
+                    
+                    <!-- Div to make disappear when we edit a post -->
+                    <div id="disappear_{{post.id}}">
+                        <p id="text_{{post.id}}" style="margin-top:20px;">{{post.content}}</p>
+                        <div id="date_post"><i>Posted on <span>{{post.date}}</span> </i></div>
+                    </div>
+
+
+                    <!-- Hidden Block with a text area that appear when we edit a post -->
+                    <div style="display:none;" id="new_text_{{post.id}}">
+                        <textarea id="textarea_{{post.id}}"  name="textarea-post" class ="textarea" id="textarea" rows="3" required="True"></textarea>
+                        <button onclick="hideEditField(event)" post_id="{{post.id}}" type="submit" class="btn btn-danger my-2 item">Cancel</button>
+                        <button  onclick="saveEdit(event)" post_id="{{post.id}}" type="submit" class="btn btn-success my-2 item">Save</button>
+
+                    </div>
+
+                        {% if user.is_authenticated and user.id == post.author.id %}
+                        <span onclick="editPost(event)" button_action="edit_post" id="edit_{{post.id}}" post_id="{{post.id}}" class="edit_button">Edit</span> 
+                        <span onclick="deletePost(event)" button_action="delete_post" post_id="{{post.id}}" class="edit_button">Delete</span> 
+                        {% endif %}
+
+
+
+                    {% if user.is_authenticated %}
+
+                        <div>
+                            <span onclick="like(event)"  post_id="{{post.id}}"  id="heart_full_{{post.id}}" class="item heart {% if not post.liked %} d-none {% endif %}" style="color:red;" >&#9829;</span>
+                            <span onclick="like(event)" post_id="{{post.id}}" id="heart_empty_{{post.id}}" class="item heart {% if post.liked %} d-none {% endif %}" style="color:red;">&#9825;</span>
+                            <p id="count_likes_{{post.id}}" class="item like_count" >{{ post.likes.count }}</p>
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+
+            {% endfor %}
+
+                <nav class="pagination" aria-label="Page navigation example">
+                    <span class="step-links"></span>
+                        <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+        
+                        <li class="page-item"><a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+                        {% endif %}
+                        </ul>
+                    </span>
+                  </nav>
+    </div>
+
+{% endblock %}

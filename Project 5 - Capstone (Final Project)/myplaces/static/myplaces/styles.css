@@ -1,0 +1,207 @@
+#map { 
+    position: absolute; 
+    top: 0; bottom: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index:-1;
+    /* margin-top: 56px; - not useful anymore as we have set the map to be behing the navbar*/
+}
+
+.title-error{
+  color: red;
+  font-weight: bold;
+}
+
+#Latitude-name, #Longitude-name{
+  font-size: 0.8rem;
+  height: auto;
+}
+
+.question-mark-logo {
+  height:20px;
+}
+
+
+/* Pop Up Marker */
+.marker {
+  background-image: url('myplaces/static/myplaces/logos/icon-marker.png');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mapboxgl-popup {
+max-width: 100px;
+}
+
+.mapboxgl-popup-content {
+text-align: center;
+font-family: 'Open Sans', sans-serif;
+}
+
+
+
+/* Form */
+label {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Input group for the lgn lat in the modal form - gray scquares */
+.input-group-text {
+  border-radius: 0;
+}
+
+
+/* Button New Map */
+.button {
+    display: inline-flex;
+    height: 40px;
+    width: 150px;
+    border: 2px solid #BFC0C0;
+    margin: 20px 0px 0px 20px;
+    color: #BFC0C0;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-size: .8em;
+    letter-spacing: 1.5px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#button-5 {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#button-5 a {
+  position: relative;
+  transition: all .45s ease-Out;
+  color: white;
+}
+
+#button-5 a:hover {
+    text-decoration: none;
+  }
+
+#translate {
+  transform: rotate(50deg);
+  width: 100%;
+  height: 250%;
+  left: -200px;
+  top: -30px;
+  background: #BFC0C0;
+  position: absolute;
+  transition: all .3s ease-Out;
+}
+
+#button-5:hover #translate {
+  left: 0;
+}
+
+#button-5:hover a {
+  color: #2D3142;
+}
+  
+
+/* My Places Page */
+.form-select{
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+.form-select:hover{
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.container{
+  max-width: 1500px;
+  padding: 50px;
+}
+
+
+/* Transition appearance cards */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.col {
+  margin-top: 30px;
+  animation: fadeIn 1.5s;
+}
+
+.not-created-yet{
+  animation: fadeIn 1.5s;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  border-radius: 7px;
+  border:none;
+}
+
+.card-img, .card-img-top {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.card:hover {
+  box-shadow: 0 12px 20px 0 rgba(0,0,0,0.2);
+}
+
+.card-body{
+  padding: 15px 15px;
+}
+
+/* Switch between Pages */
+.map{
+  display: block;
+}
+
+.newPlace{
+  display: block;
+}
+
+.myplacespage{
+  display: none;
+}
+
+
+/* Login, Register Pages */
+.login, .register {
+  max-width: 500px;
+  padding: 30px;
+  box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2);
+  /*rgba(0, 0, 0, 0.2)*/
+  transition: 0.3s;
+  border-radius: 7px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 10%;
+}
+
+.login #buttonLR, .register #buttonLR {
+  margin: 5px 0 20px 0;
+  width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  .login, .register {
+      box-shadow: none;
+      margin-top: 10%;
+  }  
+}
+
+
+.newPlace, .delete-modals{
+  display: inline-block;
+}

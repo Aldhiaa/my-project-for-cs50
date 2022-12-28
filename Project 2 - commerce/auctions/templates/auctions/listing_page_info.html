@@ -1,0 +1,151 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <div class="message">
+        {% if user.is_authenticated and listing_info.isActive == False and user == listing_info.owner %}
+            <div class="alert alert-success alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Success!</strong> Your Listing was closed successfully!
+            </div>
+        {% endif %}
+
+        {% if user.is_authenticated and listing_info.isActive == False and user == last_outbid.person %}
+            <div class="alert alert-success alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Congratulations!</strong> You won this Bid!
+            </div>
+        {% endif %}
+
+
+        {% if message %}
+            {% if status == "failed" %}
+            <div class="alert alert-danger alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Warning!</strong> {{ message }}
+            </div>
+            {% elif status == "success" %}
+            <div class="alert alert-success alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Success!</strong> {{ message }}
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+   <div class="product px-5">
+        <img class="product__image" src="{{ listing_info.imageURL }}" alt="{{ listing_info.title }}">
+    <div class="product__content">
+        <h1>{{listing_info.title}}</h1>
+
+
+        {% if user.is_authenticated and listing_info.isActive %}
+            {% if ListingInUserWatchlist %}
+                <form action="{% url 'removefromwatchlist' id=listing_info.id %}" method="POST" class="sideBySideForm">
+                {% csrf_token %}
+                    <button type="submt" class="btn btn-danger">Remove from watchlist</button>
+                </form>
+            {% else %}
+                <form action="{% url 'addtowatchlist' id=listing_info.id %}" method="POST" class="sideBySideForm">
+                {% csrf_token %}
+                    <button type="submt" class="btn btn-success">Add to Watchlist</button>
+                </form>
+            {% endif %}
+
+            {% if owner %}
+            <form id="form2" action="{% url 'close_auction' id=listing_info.id %}" method="POST" class="sideBySideForm">
+                {% csrf_token %}
+                    <button type="submt" class="btn btn-danger">Close auction</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+
+        <h3>Initial Price: ${{listing_info.starting_price}}</h3>
+        <h5>{{ listing_info.description }}</h5>
+        <h6 class="mt-4">Listed on: {{ listing_info.creation_date }} by <strong>{{ listing_info.owner }}</strong></h6>
+
+
+        <!-- Bid section -->
+        {% if user.is_authenticated and listing_info.isActive %}
+        <form action="{% url 'bid' id=listing_info.id %}" method="POST" class="my-4">
+            {% csrf_token %}
+            <div class="w-50 form-group">
+                <label for="bid">Place your Bid here:</label>
+                <input type="text" name="bid" id="bid" class="form-control" placeholder="Bid Amount...">
+            </div>
+            <button class="btn btn-primary">Place Bid</button>
+        </form>
+        {% else %}
+        <p>This auction is closed.</p>
+        {% endif %}
+
+
+        {% if listing_info.isActive %}
+            {% if last_outbid %}
+                <h5>Last Outbid:</h5>
+                    <ul>
+                        <h5><li><b>{{ last_outbid.person }}</b> bidded ${{ last_outbid.price }} on {{ last_outbid.date }}</li></h5>
+                    </ul>
+            {% else %}
+                <p style="color:gray;">No Bids yet..</p>
+            {% endif %}
+
+        {% else %}
+                {% if last_outbid %}
+                    <h5>Winner:</h5>
+                    <ul>
+                        <h5><li><b>{{ last_outbid.person }}</b> won this bid!</li></h5>
+                    </ul>
+                {% else %}
+                    <p style="color:gray;">No Bids yet..</p>
+                {% endif %}
+
+        {% endif %}
+        
+    </div>
+   </div>
+
+   <div class="comment">
+    <h5>Comment Section: </h5>
+        {% if user.is_authenticated%}
+            {% if listing_info.isActive %}
+            <!-- Post Comment section -->
+            <form action="{% url 'comment' id=listing_info.id %}" method="POST">
+                {% csrf_token %}
+                <textarea style="width:100%; height:80px;" type="text" name="new_comment" placeholder="Add a comment here..."></textarea>
+                <div>
+                    <button type="submt" class="btn btn-success my-2">Post Comment</button>
+                </div>
+            </form>
+            {% endif %}
+        {% else %}
+        <p style="margin-top:20px;"> <span style="color:red;">&#9888;</span> If you want to Bid for this Item or Post a Comment, you need to <a href="{% url 'login' %}">Log In or Register!</a><span style="color:red;"> &#9888;</span> </p>
+        {% endif %}
+
+
+        <!-- Comment section -->
+        {% for comment in item_comments %}
+        <div class="alert alert-secondary" role="alert">
+            <p class="font-weight-bold mb-1">{{ comment.person }} :</p>
+            <p class="my-1">{{ comment.comment }}</p>
+            <p class="my-0">Commented on : {{ comment.date }}</p>
+            {% if user.is_authenticated and user == comment.person %}
+            <form action="{% url 'delete_comment' id=comment.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id_listing" value="{{ listing_info.id }}">
+                <button type="submt" class="btn btn-danger btn-sm my-2">Delete</button>
+            </form>
+            {% endif %}
+            
+        </div>
+        {% empty %}
+        <p>No comments yet.</p>
+        {% endfor %}
+   </div>
+
+   
+
+
+
+{% endblock %}

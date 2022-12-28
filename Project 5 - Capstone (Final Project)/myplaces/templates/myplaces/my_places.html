@@ -1,0 +1,38 @@
+{% extends "myplaces/layout.html" %} {% load static %}
+
+{% block body %}
+
+<div class="container">
+  
+    <div class="text-center">
+      <h1>My Places</h1>
+    
+        <!-- Select menu for the filter by Category -->
+        <select id="sel" style="cursor:pointer;" class="form-select" aria-label="Default select example">
+          <option value="" disabled selected>Filter By Category</option>
+          <option value="all">All</option>
+          {% for category in categories %}
+            <option value="{{category.name}}">{{category.name}}</option>
+          {% endfor %}
+        </select>
+
+        <!-- Input for the search by Input: "Search by name" -->
+        <div class="input-group my-3 mr-auto ml-auto" style="max-width:170px;">
+          <input id="inputSearch" type="text" class="form-control" placeholder="Search By Name" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        </div>
+
+    </div>
+
+    <!-- Div in which we will insert our cards for each place -->
+    <div class="container-fluid content-row">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 cards-places">
+        </div>
+    </div>
+
+    <!-- Div in which we will insert any error message -->
+    <div class="error-div">
+    </div>
+
+
+<script  src="{% static 'myplaces/myplaces.js' %}" defer></script>
+{% endblock %}
